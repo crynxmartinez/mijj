@@ -8,7 +8,14 @@ import { GripVertical } from "lucide-react"
 interface Transaction {
   id: string
   amount: number
+  phase: string
+  category: string
   transactionType: string
+  reason: string
+  vendorName: string
+  date: Date
+  paymentStatus: string
+  imageUrl?: string | null
 }
 
 interface Project {
