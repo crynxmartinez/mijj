@@ -1,4 +1,4 @@
-import { PrismaClient, ProjectStatus } from '@prisma/client'
+import { PrismaClient, ProjectStatus, TransactionType, TransactionCategory, PaymentStatus, ProjectPhase } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -78,13 +78,13 @@ async function generateTransactions(projectId: string, projectBudget: number, pr
         transactions.push({
           projectId,
           amount: Math.floor(Math.random() * (projectBudget * 0.3)) + 50000,
-          transactionType: 'INCOME',
-          category: 'OTHER',
+          transactionType: TransactionType.INCOME,
+          category: TransactionCategory.OTHER,
           reason: 'Client payment - Progress billing',
           vendorName: 'Client',
           date,
-          paymentStatus: Math.random() > 0.3 ? 'PAID' : 'PENDING',
-          phase: 'CONSTRUCTION',
+          paymentStatus: Math.random() > 0.3 ? PaymentStatus.PAID : PaymentStatus.PENDING,
+          phase: ProjectPhase.CONSTRUCTION,
           invoiceNumber: `INV-2025-${String(month + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
           imageUrls: [],
         })
