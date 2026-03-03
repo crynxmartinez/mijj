@@ -86,6 +86,61 @@ export function MobileSidebar() {
           {/* Navigation */}
           <nav className="flex-1 space-y-1 px-3 py-4">
             {navigation.map((item) => {
+              // Check if item has submenu
+              if ('submenu' in item && item.submenu) {
+                const isSubmenuActive = item.submenu.some(sub => pathname === sub.href || pathname.startsWith(sub.href + "/"))
+                
+                return (
+                  <div key={item.name}>
+                    {/* Parent menu item */}
+                    <button
+                      onClick={() => setReportsOpen(!reportsOpen)}
+                      className={cn(
+                        "w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                        isSubmenuActive
+                          ? "bg-slate-800 text-white"
+                          : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                      )}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="flex-1 text-left">{item.name}</span>
+                      {reportsOpen ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </button>
+                    
+                    {/* Submenu items */}
+                    {reportsOpen && (
+                      <div className="ml-4 mt-1 space-y-1">
+                        {item.submenu.map((subItem) => {
+                          const isActive = pathname === subItem.href || pathname.startsWith(subItem.href + "/")
+                          return (
+                            <Link
+                              key={subItem.name}
+                              href={subItem.href}
+                              onClick={() => setOpen(false)}
+                              className={cn(
+                                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+                                isActive
+                                  ? "bg-slate-700 text-white border-l-4 border-blue-500"
+                                  : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                              )}
+                            >
+                              <span>{subItem.name}</span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              
+              // Regular menu item without submenu
+              if (!item.href) return null
+              
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
               return (
                 <Link
