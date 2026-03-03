@@ -15,20 +15,41 @@ interface Project {
 export function TransactionForm({ projects }: { projects: Project[] }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [amountValue, setAmountValue] = useState("")
+  const [budgetedAmountValue, setBudgetedAmountValue] = useState("")
+
+  const formatCurrency = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, "")
+    if (!numericValue) return ""
+    const number = parseInt(numericValue)
+    return number.toLocaleString("en-US")
+  }
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value)
+    setAmountValue(formatted)
+  }
+
+  const handleBudgetedAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value)
+    setBudgetedAmountValue(formatted)
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    const amountNumeric = amountValue.replace(/,/g, "")
+    const budgetedNumeric = budgetedAmountValue.replace(/,/g, "")
     const data = {
       projectId: formData.get("projectId"),
       date: formData.get("date"),
       phase: formData.get("phase"),
       category: formData.get("category"),
       vendorName: formData.get("vendorName"),
-      amount: parseFloat(formData.get("amount") as string),
-      budgetedAmount: formData.get("budgetedAmount") ? parseFloat(formData.get("budgetedAmount") as string) : null,
+      amount: parseFloat(amountNumeric),
+      budgetedAmount: budgetedNumeric ? parseFloat(budgetedNumeric) : null,
       paymentStatus: formData.get("paymentStatus"),
       invoiceNumber: formData.get("invoiceNumber") || null,
       notes: formData.get("notes") || null,
@@ -119,13 +140,28 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="amount">Amount ($)</Label>
-          <Input id="amount" name="amount" type="number" step="0.01" required placeholder="0.00" />
+          <Label htmlFor="amount">Amount (₱)</Label>
+          <Input 
+            id="amount" 
+            name="amount" 
+            type="text" 
+            required 
+            placeholder="50,000"
+            value={amountValue}
+            onChange={handleAmountChange}
+          />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="budgetedAmount">Budgeted Amount ($)</Label>
-          <Input id="budgetedAmount" name="budgetedAmount" type="number" step="0.01" placeholder="Optional" />
+          <Label htmlFor="budgetedAmount">Budgeted Amount (₱)</Label>
+          <Input 
+            id="budgetedAmount" 
+            name="budgetedAmount" 
+            type="text" 
+            placeholder="Optional"
+            value={budgetedAmountValue}
+            onChange={handleBudgetedAmountChange}
+          />
         </div>
       </div>
 

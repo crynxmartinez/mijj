@@ -10,18 +10,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export function ProjectForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [budgetValue, setBudgetValue] = useState("")
+
+  const formatCurrency = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, "")
+    if (!numericValue) return ""
+    const number = parseInt(numericValue)
+    return number.toLocaleString("en-US")
+  }
+
+  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value)
+    setBudgetValue(formatted)
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    const budgetNumeric = budgetValue.replace(/,/g, "")
     const data = {
       name: formData.get("name"),
       description: formData.get("description"),
       clientName: formData.get("clientName"),
       startDate: formData.get("startDate"),
-      totalBudget: parseFloat(formData.get("totalBudget") as string),
+      totalBudget: parseFloat(budgetNumeric),
       status: formData.get("status"),
     }
 
@@ -67,8 +81,16 @@ export function ProjectForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="totalBudget">Total Budget ($)</Label>
-          <Input id="totalBudget" name="totalBudget" type="number" step="0.01" required placeholder="0.00" />
+          <Label htmlFor="totalBudget">Total Budget (₱)</Label>
+          <Input 
+            id="totalBudget" 
+            name="totalBudget" 
+            type="text" 
+            required 
+            placeholder="2,000,000"
+            value={budgetValue}
+            onChange={handleBudgetChange}
+          />
         </div>
       </div>
 
