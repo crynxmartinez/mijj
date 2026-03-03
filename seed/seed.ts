@@ -84,33 +84,40 @@ async function generateTransactions(projectId: string, projectBudget: number, pr
           vendorName: 'Client',
           date,
           paymentStatus: Math.random() > 0.3 ? PaymentStatus.PAID : PaymentStatus.PENDING,
-          phase: ProjectPhase.CONSTRUCTION,
+          phase: ProjectPhase.IN_PROGRESS,
           invoiceNumber: `INV-2025-${String(month + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
           imageUrls: [],
         })
       } else {
         // Expense transaction
-        const categories = ['LABOR', 'MATERIALS', 'EQUIPMENT', 'SUBCONTRACTOR', 'PERMITS', 'OVERHEAD']
+        const categories = [
+          TransactionCategory.LABOR,
+          TransactionCategory.MATERIALS,
+          TransactionCategory.EQUIPMENT,
+          TransactionCategory.SUBCONTRACTOR,
+          TransactionCategory.PERMITS,
+          TransactionCategory.OVERHEAD,
+        ]
         const category = categories[Math.floor(Math.random() * categories.length)]
         const vendors = {
-          LABOR: 'ABC Construction Workers',
-          MATERIALS: 'XYZ Building Supplies',
-          EQUIPMENT: 'Heavy Equipment Rentals Inc',
-          SUBCONTRACTOR: 'Elite Electrical Services',
-          PERMITS: 'City Government',
-          OVERHEAD: 'Office Expenses',
+          [TransactionCategory.LABOR]: 'ABC Construction Workers',
+          [TransactionCategory.MATERIALS]: 'XYZ Building Supplies',
+          [TransactionCategory.EQUIPMENT]: 'Heavy Equipment Rentals Inc',
+          [TransactionCategory.SUBCONTRACTOR]: 'Elite Electrical Services',
+          [TransactionCategory.PERMITS]: 'City Government',
+          [TransactionCategory.OVERHEAD]: 'Office Expenses',
         }
 
         transactions.push({
           projectId,
           amount: Math.floor(Math.random() * (projectBudget * 0.15)) + 10000,
-          transactionType: 'EXPENSE',
+          transactionType: TransactionType.EXPENSE,
           category,
           reason: `${category.toLowerCase()} expenses for construction`,
-          vendorName: vendors[category as keyof typeof vendors],
+          vendorName: vendors[category],
           date,
-          paymentStatus: Math.random() > 0.2 ? 'PAID' : 'PENDING',
-          phase: 'CONSTRUCTION',
+          paymentStatus: Math.random() > 0.2 ? PaymentStatus.PAID : PaymentStatus.PENDING,
+          phase: ProjectPhase.IN_PROGRESS,
           invoiceNumber: `EXP-2025-${String(month + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
           imageUrls: [],
         })
