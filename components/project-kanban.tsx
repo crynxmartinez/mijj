@@ -17,7 +17,7 @@ interface Transaction {
   vendorName: string
   date: Date
   paymentStatus: string
-  imageUrl?: string | null
+  imageUrls: string[]
 }
 
 interface Project {
@@ -76,13 +76,26 @@ export function ProjectKanban({ projects: initialProjects }: ProjectKanbanProps)
     const { active, over } = event
     setActiveId(null)
 
-    if (!over) return
+    if (!over) {
+      console.log("Drop cancelled - no valid drop zone")
+      return
+    }
 
     const projectId = active.id as string
     const newStatus = over.id as string
 
     const project = projects.find(p => p.id === projectId)
-    if (!project || project.status === newStatus) return
+    if (!project) {
+      console.error("Project not found:", projectId)
+      return
+    }
+    
+    if (project.status === newStatus) {
+      console.log("Project already in this status, no update needed")
+      return
+    }
+
+    console.log(`Moving project "${project.name}" from ${project.status} to ${newStatus}`)
 
     // Optimistic update - update UI immediately
     setProjects(prevProjects => 
@@ -99,12 +112,17 @@ export function ProjectKanban({ projects: initialProjects }: ProjectKanbanProps)
       })
 
       if (!response.ok) {
+        const errorData = await response.json()
+        console.error("API error:", errorData)
         // Revert on error
         setProjects(prevProjects => 
           prevProjects.map(p => 
             p.id === projectId ? { ...p, status: project.status } : p
           )
         )
+      } else {
+        const updatedProject = await response.json()
+        console.log("Project updated successfully:", updatedProject)
       }
     } catch (error) {
       console.error("Failed to update project status:", error)

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         amount: body.amount,
         paymentStatus: body.paymentStatus,
         invoiceNumber: body.invoiceNumber,
-        imageUrl: body.imageUrl,
+        imageUrls: body.imageUrls || [],
         notes: body.notes,
       },
     })

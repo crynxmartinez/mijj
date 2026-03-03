@@ -29,6 +29,7 @@ export function AddTransactionModal({
   const [loading, setLoading] = useState(false)
   const [amountValue, setAmountValue] = useState("")
   const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE">("EXPENSE")
+  const [imageUrls, setImageUrls] = useState<string[]>([""])
 
   const formatCurrency = (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, "")
@@ -42,12 +43,32 @@ export function AddTransactionModal({
     setAmountValue(formatted)
   }
 
+  const addImageUrlField = () => {
+    setImageUrls([...imageUrls, ""])
+  }
+
+  const removeImageUrlField = (index: number) => {
+    if (imageUrls.length > 1) {
+      setImageUrls(imageUrls.filter((_, i) => i !== index))
+    }
+  }
+
+  const updateImageUrl = (index: number, value: string) => {
+    const newUrls = [...imageUrls]
+    newUrls[index] = value
+    setImageUrls(newUrls)
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const amountNumeric = amountValue.replace(/,/g, "")
+    
+    // Filter out empty image URLs
+    const validImageUrls = imageUrls.filter(url => url.trim() !== "")
+    
     const data = {
       projectId: projectId,
       date: formData.get("date"),
@@ -59,7 +80,7 @@ export function AddTransactionModal({
       amount: parseFloat(amountNumeric),
       paymentStatus: formData.get("paymentStatus"),
       invoiceNumber: formData.get("invoiceNumber") || null,
-      imageUrl: formData.get("imageUrl") || null,
+      imageUrls: validImageUrls,
       notes: formData.get("notes") || null,
     }
 
@@ -74,6 +95,7 @@ export function AddTransactionModal({
         // Reset form
         setAmountValue("")
         setTransactionType("EXPENSE")
+        setImageUrls([""])
         onOpenChange(false)
         // Notify parent to refresh data
         if (onSuccess) {
@@ -252,8 +274,37 @@ export function AddTransactionModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="imageUrl">Image/Receipt URL</Label>
-            <Input id="imageUrl" name="imageUrl" type="url" placeholder="https://example.com/receipt.jpg" />
+            <Label>Image/Receipt URLs</Label>
+            {imageUrls.map((url, index) => (
+              <div key={index} className="flex gap-2">
+                <Input
+                  type="url"
+                  placeholder="https://example.com/receipt.jpg"
+                  value={url}
+                  onChange={(e) => updateImageUrl(index, e.target.value)}
+                />
+                {imageUrls.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => removeImageUrlField(index)}
+                  >
+                    ✕
+                  </Button>
+                )}
+                {index === imageUrls.length - 1 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={addImageUrlField}
+                  >
+                    +
+                  </Button>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="space-y-2">

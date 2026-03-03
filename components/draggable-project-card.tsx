@@ -15,7 +15,7 @@ interface Transaction {
   vendorName: string
   date: Date
   paymentStatus: string
-  imageUrl?: string | null
+  imageUrls: string[]
 }
 
 interface Project {

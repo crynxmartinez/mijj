@@ -21,7 +21,7 @@ interface Transaction {
   paymentStatus: string
   budgetedAmount?: number | null
   invoiceNumber?: string | null
-  imageUrl?: string | null
+  imageUrls: string[]
   notes?: string | null
 }
 
@@ -191,15 +191,21 @@ export function ProjectDetailModalTable({ project, open, onOpenChange }: Project
                           </span>
                         </td>
                         <td className="py-3 px-2 text-center">
-                          {transaction.imageUrl ? (
-                            <a 
-                              href={transaction.imageUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800"
-                            >
-                              📎 <ExternalLink className="h-3 w-3" />
-                            </a>
+                          {transaction.imageUrls && transaction.imageUrls.length > 0 ? (
+                            <div className="flex gap-1 justify-center flex-wrap">
+                              {transaction.imageUrls.map((url, idx) => (
+                                <a 
+                                  key={idx}
+                                  href={url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-xs"
+                                  title={`Image ${idx + 1}`}
+                                >
+                                  📎{idx + 1} <ExternalLink className="h-3 w-3" />
+                                </a>
+                              ))}
+                            </div>
                           ) : (
                             <span className="text-muted-foreground">-</span>
                           )}
