@@ -41,7 +41,7 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
         {projects.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground mb-4">No projects yet</p>
-            <Link href="/projects/new">
+            <Link href="/dashboard/projects/new">
               <Button>Create Your First Project</Button>
             </Link>
           </div>
@@ -96,7 +96,7 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
                     <p className="text-xs text-muted-foreground">
                       Started {formatDate(project.startDate)}
                     </p>
-                    <Link href={`/projects/${project.id}`}>
+                    <Link href={`/dashboard/projects/${project.id}`}>
                       <Button variant="ghost" size="sm">
                         View Details <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
