@@ -189,7 +189,7 @@ async function generateTransactions(projectId: string, projectBudget: number, pr
           vendorName: vendors[category],
           date,
           paymentStatus: Math.random() > 0.2 ? PaymentStatus.PAID : PaymentStatus.PENDING,
-          phase: ProjectPhase.IN_PROGRESS,
+          phase,
           invoiceNumber: `EXP-2025-${String(month + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
           imageUrls: [],
         })
