@@ -26,7 +26,8 @@ const navigation = [
     name: "Reports", 
     icon: BarChart3,
     submenu: [
-      { name: "Project Reports", href: "/dashboard/reports" }
+      { name: "Project Reports", href: "/dashboard/reports" },
+      { name: "Trends", href: "/dashboard/reports/trends" }
     ]
   },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
