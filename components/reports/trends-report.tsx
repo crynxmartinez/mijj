@@ -121,8 +121,13 @@ export function TrendsReport({ projects, selectedYear }: TrendsReportProps) {
         <div className="mb-8">
           <div className="flex items-end justify-between gap-2 h-64 border-b border-l border-muted pb-2 pl-2">
             {monthlyData.map((data, index) => {
-              const incomeHeight = maxValue > 0 ? (data.income / maxValue) * 100 : 0
-              const expenseHeight = maxValue > 0 ? (data.expenses / maxValue) * 100 : 0
+              // Calculate heights with minimum visibility
+              let incomeHeight = maxValue > 0 ? (data.income / maxValue) * 100 : 0
+              let expenseHeight = maxValue > 0 ? (data.expenses / maxValue) * 100 : 0
+              
+              // Add minimum height of 2% if there's any amount
+              if (data.income > 0 && incomeHeight < 2) incomeHeight = 2
+              if (data.expenses > 0 && expenseHeight < 2) expenseHeight = 2
 
               return (
                 <div key={index} className="flex-1 flex flex-col items-center gap-1">
@@ -130,23 +135,27 @@ export function TrendsReport({ projects, selectedYear }: TrendsReportProps) {
                   <div className="w-full flex justify-center items-end h-full">
                     <div className="flex gap-1 items-end h-full w-full max-w-[80px]">
                       <div
-                        className="flex-1 bg-blue-500 rounded-t hover:bg-blue-600 transition-all cursor-pointer relative group"
-                        style={{ height: `${incomeHeight}%` }}
+                        className={`flex-1 rounded-t hover:bg-blue-600 transition-all cursor-pointer relative group ${data.income > 0 ? 'bg-blue-500' : ''}`}
+                        style={{ height: `${incomeHeight}%`, minHeight: data.income > 0 ? '4px' : '0' }}
                         title={`Income: ${formatCurrency(data.income)}`}
                       >
-                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                          {formatCurrency(data.income)}
-                        </div>
+                        {data.income > 0 && (
+                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            {formatCurrency(data.income)}
+                          </div>
+                        )}
                       </div>
                       {/* Expense Bar */}
                       <div
-                        className="flex-1 bg-red-500 rounded-t hover:bg-red-600 transition-all cursor-pointer relative group"
-                        style={{ height: `${expenseHeight}%` }}
+                        className={`flex-1 rounded-t hover:bg-red-600 transition-all cursor-pointer relative group ${data.expenses > 0 ? 'bg-red-500' : ''}`}
+                        style={{ height: `${expenseHeight}%`, minHeight: data.expenses > 0 ? '4px' : '0' }}
                         title={`Expenses: ${formatCurrency(data.expenses)}`}
                       >
-                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                          {formatCurrency(data.expenses)}
-                        </div>
+                        {data.expenses > 0 && (
+                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            {formatCurrency(data.expenses)}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
