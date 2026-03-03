@@ -227,6 +227,13 @@ export function ReportsClient({ projects }: ReportsClientProps) {
             dateTo={dateTo} 
           />
         )}
+        {reportType === "trends" && (
+          <TrendsReport 
+            projects={filteredProjects} 
+            dateFrom={dateFrom} 
+            dateTo={dateTo} 
+          />
+        )}
         {(reportType === "expense-category" || 
           reportType === "accounts-receivable" || 
           reportType === "accounts-payable") && (
