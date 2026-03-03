@@ -16,6 +16,9 @@ interface Project {
   name: string
   clientName: string
   totalBudget: number
+  status: string
+  startDate: Date
+  description?: string | null
   transactions: Transaction[]
 }
 
