@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { ProjectDetailModalTable } from "@/components/project-detail-modal-table"
@@ -42,6 +42,11 @@ export function ProjectKanban({ projects: initialProjects }: ProjectKanbanProps)
   const [modalOpen, setModalOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
 
+  // Sync server data with local state when props change
+  useEffect(() => {
+    setProjects(initialProjects)
+  }, [initialProjects])
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -79,15 +84,36 @@ export function ProjectKanban({ projects: initialProjects }: ProjectKanbanProps)
     const project = projects.find(p => p.id === projectId)
     if (!project || project.status === newStatus) return
 
+    // Optimistic update - update UI immediately
+    setProjects(prevProjects => 
+      prevProjects.map(p => 
+        p.id === projectId ? { ...p, status: newStatus } : p
+      )
+    )
+
     try {
-      await fetch(`/api/projects/${projectId}`, {
+      const response = await fetch(`/api/projects/${projectId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       })
-      router.refresh()
+
+      if (!response.ok) {
+        // Revert on error
+        setProjects(prevProjects => 
+          prevProjects.map(p => 
+            p.id === projectId ? { ...p, status: project.status } : p
+          )
+        )
+      }
     } catch (error) {
       console.error("Failed to update project status:", error)
+      // Revert on error
+      setProjects(prevProjects => 
+        prevProjects.map(p => 
+          p.id === projectId ? { ...p, status: project.status } : p
+        )
+      )
     }
   }
 
