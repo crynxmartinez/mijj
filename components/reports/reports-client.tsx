@@ -11,6 +11,7 @@ import { ReportSelector, ReportType } from "@/components/reports/report-selector
 import { ProfitLossReport } from "@/components/reports/profit-loss-report"
 import { ProjectProfitabilityReport } from "@/components/reports/project-profitability-report"
 import { CashFlowReport } from "@/components/reports/cash-flow-report"
+import { TrendsReport } from "@/components/reports/trends-report"
 
 interface Transaction {
   id: string
