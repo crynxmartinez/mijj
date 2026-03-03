@@ -118,7 +118,10 @@ export function Sidebar() {
                   {!collapsed && reportsOpen && (
                     <div className="ml-4 mt-1 space-y-1">
                       {item.submenu.map((subItem) => {
-                        const isActive = pathname === subItem.href || pathname.startsWith(subItem.href + "/")
+                        // For exact matching on submenu items to avoid conflicts
+                        const isActive = subItem.href === "/dashboard/reports"
+                          ? pathname === subItem.href
+                          : pathname === subItem.href || pathname.startsWith(subItem.href + "/")
                         return (
                           <Link
                             key={subItem.name}
