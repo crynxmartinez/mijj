@@ -119,53 +119,86 @@ export function TrendsReport({ projects, selectedYear }: TrendsReportProps) {
 
         {/* Chart */}
         <div className="mb-8">
-          <div className="flex items-end justify-between gap-2 h-64 border-b border-l border-muted pb-2 pl-2">
-            {monthlyData.map((data, index) => {
-              // Calculate heights with minimum visibility
-              let incomeHeight = maxValue > 0 ? (data.income / maxValue) * 100 : 0
-              let expenseHeight = maxValue > 0 ? (data.expenses / maxValue) * 100 : 0
-              
-              // Add minimum height of 2% if there's any amount
-              if (data.income > 0 && incomeHeight < 2) incomeHeight = 2
-              if (data.expenses > 0 && expenseHeight < 2) expenseHeight = 2
+          <div className="relative h-64 border-b border-l border-muted">
+            {/* Y-axis grid lines */}
+            <div className="absolute inset-0 flex flex-col justify-between py-2">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-full border-t border-muted/30" />
+              ))}
+            </div>
 
-              return (
-                <div key={index} className="flex-1 flex flex-col items-center gap-1">
-                  {/* Income Bar */}
-                  <div className="w-full flex justify-center items-end h-full">
-                    <div className="flex gap-1 items-end h-full w-full max-w-[80px]">
-                      <div
-                        className={`flex-1 rounded-t hover:bg-blue-600 transition-all cursor-pointer relative group ${data.income > 0 ? 'bg-blue-500' : ''}`}
-                        style={{ height: `${incomeHeight}%`, minHeight: data.income > 0 ? '4px' : '0' }}
-                        title={`Income: ${formatCurrency(data.income)}`}
-                      >
-                        {data.income > 0 && (
-                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                            {formatCurrency(data.income)}
-                          </div>
-                        )}
+            {/* SVG for lines */}
+            <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+              {/* Income line */}
+              <polyline
+                points={monthlyData.map((data, index) => {
+                  const x = ((index + 0.5) / 12) * 100
+                  const y = maxValue > 0 ? 100 - ((data.income / maxValue) * 100) : 100
+                  return `${x}%,${y}%`
+                }).join(' ')}
+                fill="none"
+                stroke="#3b82f6"
+                strokeWidth="3"
+                className="drop-shadow-md"
+              />
+              
+              {/* Expense line */}
+              <polyline
+                points={monthlyData.map((data, index) => {
+                  const x = ((index + 0.5) / 12) * 100
+                  const y = maxValue > 0 ? 100 - ((data.expenses / maxValue) * 100) : 100
+                  return `${x}%,${y}%`
+                }).join(' ')}
+                fill="none"
+                stroke="#ef4444"
+                strokeWidth="3"
+                className="drop-shadow-md"
+              />
+            </svg>
+
+            {/* Data points */}
+            <div className="absolute inset-0">
+              {monthlyData.map((data, index) => {
+                const xPos = ((index + 0.5) / 12) * 100
+                const incomeY = maxValue > 0 ? 100 - ((data.income / maxValue) * 100) : 100
+                const expenseY = maxValue > 0 ? 100 - ((data.expenses / maxValue) * 100) : 100
+
+                return (
+                  <div key={index}>
+                    {/* Income point */}
+                    <div
+                      className="absolute w-3 h-3 bg-blue-500 rounded-full border-2 border-white cursor-pointer hover:scale-150 transition-transform group"
+                      style={{ left: `${xPos}%`, top: `${incomeY}%`, transform: 'translate(-50%, -50%)' }}
+                      title={`Income: ${formatCurrency(data.income)}`}
+                    >
+                      <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                        {formatCurrency(data.income)}
                       </div>
-                      {/* Expense Bar */}
-                      <div
-                        className={`flex-1 rounded-t hover:bg-red-600 transition-all cursor-pointer relative group ${data.expenses > 0 ? 'bg-red-500' : ''}`}
-                        style={{ height: `${expenseHeight}%`, minHeight: data.expenses > 0 ? '4px' : '0' }}
-                        title={`Expenses: ${formatCurrency(data.expenses)}`}
-                      >
-                        {data.expenses > 0 && (
-                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                            {formatCurrency(data.expenses)}
-                          </div>
-                        )}
+                    </div>
+                    
+                    {/* Expense point */}
+                    <div
+                      className="absolute w-3 h-3 bg-red-500 rounded-full border-2 border-white cursor-pointer hover:scale-150 transition-transform group"
+                      style={{ left: `${xPos}%`, top: `${expenseY}%`, transform: 'translate(-50%, -50%)' }}
+                      title={`Expenses: ${formatCurrency(data.expenses)}`}
+                    >
+                      <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                        {formatCurrency(data.expenses)}
                       </div>
                     </div>
                   </div>
-                  {/* Month Label */}
-                  <span className="text-xs text-muted-foreground mt-2">
-                    {data.month.substring(0, 3)}
-                  </span>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
+
+            {/* Month labels */}
+            <div className="absolute -bottom-6 left-0 right-0 flex justify-between px-2">
+              {monthlyData.map((data, index) => (
+                <span key={index} className="text-xs text-muted-foreground">
+                  {data.month.substring(0, 3)}
+                </span>
+              ))}
+            </div>
           </div>
           
           {/* Legend */}
