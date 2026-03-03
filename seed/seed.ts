@@ -128,12 +128,7 @@ async function main() {
     console.log(`Creating project: ${projectData.name}`)
     
     const project = await prisma.project.create({
-      data: {
-        ...projectData,
-        location: 'Metro Manila, Philippines',
-        startDate: new Date(2025, 0, 1),
-        endDate: new Date(2025, 11, 31),
-      },
+      data: projectData,
     })
 
     // Generate transactions for this project

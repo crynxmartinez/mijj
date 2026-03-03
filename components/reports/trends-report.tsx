@@ -128,17 +128,18 @@ export function TrendsReport({ projects, selectedYear }: TrendsReportProps) {
             </div>
 
             {/* SVG for lines */}
-            <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
               {/* Income line */}
               <polyline
                 points={monthlyData.map((data, index) => {
                   const x = ((index + 0.5) / 12) * 100
                   const y = maxValue > 0 ? 100 - ((data.income / maxValue) * 100) : 100
-                  return `${x}%,${y}%`
+                  return `${x},${y}`
                 }).join(' ')}
                 fill="none"
                 stroke="#3b82f6"
-                strokeWidth="3"
+                strokeWidth="0.5"
+                vectorEffect="non-scaling-stroke"
                 className="drop-shadow-md"
               />
               
@@ -147,11 +148,12 @@ export function TrendsReport({ projects, selectedYear }: TrendsReportProps) {
                 points={monthlyData.map((data, index) => {
                   const x = ((index + 0.5) / 12) * 100
                   const y = maxValue > 0 ? 100 - ((data.expenses / maxValue) * 100) : 100
-                  return `${x}%,${y}%`
+                  return `${x},${y}`
                 }).join(' ')}
                 fill="none"
                 stroke="#ef4444"
-                strokeWidth="3"
+                strokeWidth="0.5"
+                vectorEffect="non-scaling-stroke"
                 className="drop-shadow-md"
               />
             </svg>
