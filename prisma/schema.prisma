@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  clientName  String
+  startDate   DateTime
+  endDate     DateTime?
+  totalBudget Float
+  status      ProjectStatus @default(PRE_BIDDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  transactions Transaction[]
+  milestones   Milestone[]
+  
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Transaction {
+  id              String   @id @default(cuid())
+  projectId       String
+  date            DateTime
+  phase           ProjectPhase
+  category        TransactionCategory
+  vendorName      String
+  amount          Float
+  budgetedAmount  Float?
+  paymentStatus   PaymentStatus @default(PENDING)
+  invoiceNumber   String?
+  receiptUrl      String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  project         Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([phase])
+  @@index([category])
+  @@index([paymentStatus])
+  @@index([date])
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  projectId   String
+  name        String
+  description String?
+  dueDate     DateTime
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  amount      Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([dueDate])
+}
+
+enum ProjectStatus {
+  PRE_BIDDING
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum ProjectPhase {
+  PRE_BIDDING
+  PROJECT_START
+  IN_PROGRESS
+  COMPLETION
+  POST_PROJECT
+}
+
+enum TransactionCategory {
+  LABOR
+  MATERIALS
+  EQUIPMENT
+  SUBCONTRACTOR
+  PERMITS
+  OVERHEAD
+  CHANGE_ORDER
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
