@@ -19,8 +19,7 @@ interface Project {
 
 interface TrendsReportProps {
   projects: Project[]
-  dateFrom: string
-  dateTo: string
+  selectedYear: number
 }
 
 interface MonthlyData {
@@ -31,14 +30,14 @@ interface MonthlyData {
   net: number
 }
 
-export function TrendsReport({ projects, dateFrom, dateTo }: TrendsReportProps) {
+export function TrendsReport({ projects, selectedYear }: TrendsReportProps) {
   // Initialize 12 months
   const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ]
 
-  // Calculate monthly data
+  // Calculate monthly data for selected year
   const monthlyData: MonthlyData[] = months.map((month, index) => {
     let income = 0
     let expenses = 0
@@ -48,10 +47,9 @@ export function TrendsReport({ projects, dateFrom, dateTo }: TrendsReportProps) 
         const transactionDate = new Date(t.date)
         const transactionMonth = transactionDate.getMonth()
         const transactionYear = transactionDate.getFullYear()
-        const currentYear = new Date().getFullYear()
 
-        // Only include transactions from current year and matching month
-        if (transactionYear === currentYear && transactionMonth === index) {
+        // Only include transactions from selected year and matching month
+        if (transactionYear === selectedYear && transactionMonth === index) {
           if (t.transactionType === "INCOME") {
             income += t.amount
           } else {
@@ -91,9 +89,9 @@ export function TrendsReport({ projects, dateFrom, dateTo }: TrendsReportProps) 
   return (
     <Card>
       <CardHeader className="text-center border-b">
-        <CardTitle className="text-2xl">Financial Trends</CardTitle>
+        <CardTitle className="text-2xl">Financial Trends - {selectedYear}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Monthly Income vs Expenses - {new Date().getFullYear()}
+          Monthly Income vs Expenses
         </p>
       </CardHeader>
       <CardContent className="pt-6">
