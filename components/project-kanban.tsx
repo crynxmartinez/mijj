@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ProjectDetailModal } from "@/components/project-detail-modal"
+import { ProjectDetailModalTable } from "@/components/project-detail-modal-table"
 import { formatCurrency } from "@/lib/utils"
 
 interface Transaction {
@@ -11,9 +11,12 @@ interface Transaction {
   amount: number
   phase: string
   category: string
+  transactionType: string
+  reason: string
   vendorName: string
   date: Date
   paymentStatus: string
+  imageUrl?: string | null
 }
 
 interface Project {
@@ -22,6 +25,8 @@ interface Project {
   clientName: string
   totalBudget: number
   status: string
+  startDate: Date
+  description?: string | null
   transactions: Transaction[]
 }
 
@@ -46,8 +51,20 @@ export function ProjectKanban({ projects }: ProjectKanbanProps) {
     setModalOpen(true)
   }
 
-  const getSpentAmount = (project: Project) => {
-    return project.transactions.reduce((sum, t) => sum + t.amount, 0)
+  const getIncome = (project: Project) => {
+    return project.transactions
+      .filter(t => t.transactionType === "INCOME")
+      .reduce((sum, t) => sum + t.amount, 0)
+  }
+
+  const getExpenses = (project: Project) => {
+    return project.transactions
+      .filter(t => t.transactionType === "EXPENSE")
+      .reduce((sum, t) => sum + t.amount, 0)
+  }
+
+  const getCurrentBudget = (project: Project) => {
+    return project.totalBudget + getIncome(project) - getExpenses(project)
   }
 
   return (
@@ -176,7 +193,7 @@ export function ProjectKanban({ projects }: ProjectKanbanProps) {
       </div>
 
       {selectedProject && (
-        <ProjectDetailModal
+        <ProjectDetailModalTable
           project={selectedProject}
           open={modalOpen}
           onOpenChange={setModalOpen}

@@ -32,12 +32,15 @@ model Transaction {
   date            DateTime
   phase           ProjectPhase
   category        TransactionCategory
+  transactionType TransactionType @default(EXPENSE)
+  reason          TransactionReason
   vendorName      String
   amount          Float
   budgetedAmount  Float?
   paymentStatus   PaymentStatus @default(PENDING)
   invoiceNumber   String?
   receiptUrl      String?
+  imageUrl        String?
   notes           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -47,6 +50,7 @@ model Transaction {
   @@index([projectId])
   @@index([phase])
   @@index([category])
+  @@index([transactionType])
   @@index([paymentStatus])
   @@index([date])
 }
@@ -101,4 +105,32 @@ enum PaymentStatus {
   PAID
   OVERDUE
   CANCELLED
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionReason {
+  LABOR_COSTS
+  MATERIALS_PURCHASE
+  EQUIPMENT_RENTAL
+  SUBCONTRACTOR_PAYMENT
+  PERMITS_LICENSES
+  UTILITIES
+  TRANSPORTATION
+  PROFESSIONAL_FEES
+  INSURANCE
+  OVERHEAD_COSTS
+  CONTINGENCY
+  OTHER_EXPENSES
+  CLIENT_PAYMENT
+  CHANGE_ORDER
+  REFUND
+  RETENTION_RELEASE
+  ADVANCE_PAYMENT
+  BUDGET_ADJUSTMENT
+  MATERIAL_SALVAGE
+  OTHER_INCOME
 }

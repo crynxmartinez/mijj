@@ -17,6 +17,7 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
   const [loading, setLoading] = useState(false)
   const [amountValue, setAmountValue] = useState("")
   const [budgetedAmountValue, setBudgetedAmountValue] = useState("")
+  const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE">("EXPENSE")
 
   const formatCurrency = (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, "")
@@ -47,11 +48,14 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
       date: formData.get("date"),
       phase: formData.get("phase"),
       category: formData.get("category"),
+      transactionType: formData.get("transactionType"),
+      reason: formData.get("reason"),
       vendorName: formData.get("vendorName"),
       amount: parseFloat(amountNumeric),
       budgetedAmount: budgetedNumeric ? parseFloat(budgetedNumeric) : null,
       paymentStatus: formData.get("paymentStatus"),
       invoiceNumber: formData.get("invoiceNumber") || null,
+      imageUrl: formData.get("imageUrl") || null,
       notes: formData.get("notes") || null,
     }
 
@@ -73,8 +77,65 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
     }
   }
 
+  const expenseReasons = [
+    { value: "LABOR_COSTS", label: "Labor Costs" },
+    { value: "MATERIALS_PURCHASE", label: "Materials Purchase" },
+    { value: "EQUIPMENT_RENTAL", label: "Equipment Rental" },
+    { value: "SUBCONTRACTOR_PAYMENT", label: "Subcontractor Payment" },
+    { value: "PERMITS_LICENSES", label: "Permits & Licenses" },
+    { value: "UTILITIES", label: "Utilities" },
+    { value: "TRANSPORTATION", label: "Transportation" },
+    { value: "PROFESSIONAL_FEES", label: "Professional Fees" },
+    { value: "INSURANCE", label: "Insurance" },
+    { value: "OVERHEAD_COSTS", label: "Overhead Costs" },
+    { value: "CONTINGENCY", label: "Contingency" },
+    { value: "OTHER_EXPENSES", label: "Other Expenses" },
+  ]
+
+  const incomeReasons = [
+    { value: "CLIENT_PAYMENT", label: "Client Payment" },
+    { value: "CHANGE_ORDER", label: "Change Order" },
+    { value: "REFUND", label: "Refund" },
+    { value: "RETENTION_RELEASE", label: "Retention Release" },
+    { value: "ADVANCE_PAYMENT", label: "Advance Payment" },
+    { value: "BUDGET_ADJUSTMENT", label: "Budget Adjustment" },
+    { value: "MATERIAL_SALVAGE", label: "Material Salvage" },
+    { value: "OTHER_INCOME", label: "Other Income" },
+  ]
+
+  const reasonOptions = transactionType === "EXPENSE" ? expenseReasons : incomeReasons
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Transaction Type */}
+      <div className="space-y-2">
+        <Label>Transaction Type</Label>
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="transactionType"
+              value="EXPENSE"
+              checked={transactionType === "EXPENSE"}
+              onChange={(e) => setTransactionType(e.target.value as "EXPENSE")}
+              className="w-4 h-4"
+            />
+            <span className="text-red-600 font-medium">- Expense</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="transactionType"
+              value="INCOME"
+              checked={transactionType === "INCOME"}
+              onChange={(e) => setTransactionType(e.target.value as "INCOME")}
+              className="w-4 h-4"
+            />
+            <span className="text-green-600 font-medium">+ Income</span>
+          </label>
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="projectId">Project</Label>
         <Select name="projectId" required>
@@ -138,6 +199,22 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
         <Input id="vendorName" name="vendorName" required placeholder="e.g., John's Construction" />
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="reason">Reason</Label>
+        <Select name="reason" required>
+          <SelectTrigger>
+            <SelectValue placeholder="Select reason" />
+          </SelectTrigger>
+          <SelectContent>
+            {reasonOptions.map((reason) => (
+              <SelectItem key={reason.value} value={reason.value}>
+                {reason.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="amount">Amount (₱)</Label>
@@ -184,6 +261,11 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
           <Label htmlFor="invoiceNumber">Invoice Number</Label>
           <Input id="invoiceNumber" name="invoiceNumber" placeholder="Optional" />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="imageUrl">Image/Receipt URL</Label>
+        <Input id="imageUrl" name="imageUrl" type="url" placeholder="https://example.com/receipt.jpg" />
       </div>
 
       <div className="space-y-2">
