@@ -118,6 +118,24 @@ async function generateTransactions(projectId: string, projectBudget: number, pr
       const day = Math.floor(Math.random() * 28) + 1
       const date = new Date(2025, month, day)
 
+      // Determine phase based on project timeline
+      let phase: ProjectPhase
+      const totalMonths = activeMonths.length
+      const monthIndex = activeMonths.indexOf(month)
+      const progress = monthIndex / totalMonths
+
+      if (progress < 0.15) {
+        phase = ProjectPhase.PRE_BIDDING
+      } else if (progress < 0.25) {
+        phase = ProjectPhase.PROJECT_START
+      } else if (progress < 0.75) {
+        phase = ProjectPhase.IN_PROGRESS
+      } else if (progress < 0.9) {
+        phase = ProjectPhase.COMPLETION
+      } else {
+        phase = ProjectPhase.POST_PROJECT
+      }
+
       if (isIncome) {
         // Income transaction
         transactions.push({
@@ -129,7 +147,7 @@ async function generateTransactions(projectId: string, projectBudget: number, pr
           vendorName: 'Client',
           date,
           paymentStatus: Math.random() > 0.3 ? PaymentStatus.PAID : PaymentStatus.PENDING,
-          phase: ProjectPhase.IN_PROGRESS,
+          phase,
           invoiceNumber: `INV-2025-${String(month + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
           imageUrls: [],
         })
