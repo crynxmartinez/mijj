@@ -1,4 +1,6 @@
-import { Navigation, MobileNavigation } from "@/components/navigation"
+import { Sidebar } from "@/components/sidebar"
+import { MobileSidebar } from "@/components/mobile-sidebar"
+import { TopHeader } from "@/components/top-header"
 
 export default function DashboardLayout({
   children,
@@ -6,17 +8,20 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="container flex h-16 items-center justify-between py-4">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-bold">MIJJ</h1>
-            <Navigation className="hidden md:flex" />
-          </div>
-        </div>
-      </header>
-      <main className="container py-6 pb-20 md:pb-6">{children}</main>
-      <MobileNavigation />
+    <div className="min-h-screen bg-slate-50">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar */}
+      <MobileSidebar />
+
+      {/* Main Content */}
+      <div className="md:pl-64 transition-all duration-300">
+        <TopHeader />
+        <main className="p-6">{children}</main>
+      </div>
     </div>
   )
 }
