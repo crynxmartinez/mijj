@@ -18,6 +18,7 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
   const [amountValue, setAmountValue] = useState("")
   const [budgetedAmountValue, setBudgetedAmountValue] = useState("")
   const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE">("EXPENSE")
+  const [imageUrls, setImageUrls] = useState<string[]>([""])
 
   const formatCurrency = (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, "")
@@ -55,7 +56,7 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
       budgetedAmount: budgetedNumeric ? parseFloat(budgetedNumeric) : null,
       paymentStatus: formData.get("paymentStatus"),
       invoiceNumber: formData.get("invoiceNumber") || null,
-      imageUrl: formData.get("imageUrl") || null,
+      imageUrls: imageUrls.filter(url => url.trim() !== ""),
       notes: formData.get("notes") || null,
     }
 
@@ -264,8 +265,41 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="imageUrl">Image/Receipt URL</Label>
-        <Input id="imageUrl" name="imageUrl" type="url" placeholder="https://example.com/receipt.jpg" />
+        <Label>Image/Receipt URLs</Label>
+        {imageUrls.map((url, index) => (
+          <div key={index} className="flex gap-2">
+            <Input
+              type="url"
+              placeholder="https://example.com/receipt.jpg"
+              value={url}
+              onChange={(e) => {
+                const newUrls = [...imageUrls]
+                newUrls[index] = e.target.value
+                setImageUrls(newUrls)
+              }}
+            />
+            {imageUrls.length > 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setImageUrls(imageUrls.filter((_, i) => i !== index))}
+              >
+                ✕
+              </Button>
+            )}
+            {index === imageUrls.length - 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setImageUrls([...imageUrls, ""])}
+              >
+                +
+              </Button>
+            )}
+          </div>
+        ))}
       </div>
 
       <div className="space-y-2">

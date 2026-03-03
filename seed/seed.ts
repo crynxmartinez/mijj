@@ -1,4 +1,4 @@
-import { PrismaClient, ProjectStatus, TransactionType, TransactionCategory, PaymentStatus, ProjectPhase } from '@prisma/client'
+import { PrismaClient, ProjectStatus, TransactionType, TransactionCategory, TransactionReason, PaymentStatus, ProjectPhase } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -80,7 +80,7 @@ async function generateTransactions(projectId: string, projectBudget: number, pr
           amount: Math.floor(Math.random() * (projectBudget * 0.3)) + 50000,
           transactionType: TransactionType.INCOME,
           category: TransactionCategory.OTHER,
-          reason: 'Client payment - Progress billing',
+          reason: TransactionReason.CLIENT_PAYMENT,
           vendorName: 'Client',
           date,
           paymentStatus: Math.random() > 0.3 ? PaymentStatus.PAID : PaymentStatus.PENDING,
@@ -108,12 +108,21 @@ async function generateTransactions(projectId: string, projectBudget: number, pr
           [TransactionCategory.OVERHEAD]: 'Office Expenses',
         }
 
+        const categoryReasonMap = {
+          [TransactionCategory.LABOR]: TransactionReason.LABOR_COSTS,
+          [TransactionCategory.MATERIALS]: TransactionReason.MATERIALS_PURCHASE,
+          [TransactionCategory.EQUIPMENT]: TransactionReason.EQUIPMENT_RENTAL,
+          [TransactionCategory.SUBCONTRACTOR]: TransactionReason.SUBCONTRACTOR_PAYMENT,
+          [TransactionCategory.PERMITS]: TransactionReason.PERMITS_LICENSES,
+          [TransactionCategory.OVERHEAD]: TransactionReason.OVERHEAD_COSTS,
+        }
+
         transactions.push({
           projectId,
           amount: Math.floor(Math.random() * (projectBudget * 0.15)) + 10000,
           transactionType: TransactionType.EXPENSE,
           category,
-          reason: `${category.toLowerCase()} expenses for construction`,
+          reason: categoryReasonMap[category],
           vendorName: vendors[category],
           date,
           paymentStatus: Math.random() > 0.2 ? PaymentStatus.PAID : PaymentStatus.PENDING,
