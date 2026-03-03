@@ -35,8 +35,9 @@ interface ProjectKanbanProps {
   projects: Project[]
 }
 
-export function ProjectKanban({ projects }: ProjectKanbanProps) {
+export function ProjectKanban({ projects: initialProjects }: ProjectKanbanProps) {
   const router = useRouter()
+  const [projects, setProjects] = useState<Project[]>(initialProjects)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
