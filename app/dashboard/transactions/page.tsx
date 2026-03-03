@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { TransactionsMasterTable } from "@/components/transactions-master-table"
 
+export const dynamic = 'force-dynamic'
+
 async function getAllProjectsWithTransactions() {
   return await prisma.project.findMany({
     include: {

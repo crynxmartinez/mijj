@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { TrendsClient } from "@/components/reports/trends-client"
 
+export const dynamic = 'force-dynamic'
+
 async function getAllProjectsWithTransactions() {
   return await prisma.project.findMany({
     include: {
