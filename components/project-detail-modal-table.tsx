@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -42,6 +43,7 @@ interface ProjectDetailModalTableProps {
 }
 
 export function ProjectDetailModalTable({ project, open, onOpenChange }: ProjectDetailModalTableProps) {
+  const router = useRouter()
   const currentPhase = project.status === "PRE_BIDDING" ? "PRE_BIDDING" : 
                        project.status === "ACTIVE" ? "PROJECT_START" : "PROJECT_END"
   
@@ -52,6 +54,11 @@ export function ProjectDetailModalTable({ project, open, onOpenChange }: Project
   const handleAddTransaction = (phase: string) => {
     setSelectedPhase(phase)
     setAddTransactionOpen(true)
+  }
+
+  const handleTransactionSuccess = () => {
+    // Refresh the server data to get updated transactions
+    router.refresh()
   }
 
   const togglePhase = (phase: string) => {
@@ -292,6 +299,7 @@ export function ProjectDetailModalTable({ project, open, onOpenChange }: Project
         projectId={project.id}
         projectName={project.name}
         defaultPhase={selectedPhase}
+        onSuccess={handleTransactionSuccess}
       />
     </Dialog>
   )

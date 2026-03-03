@@ -14,6 +14,7 @@ interface AddTransactionModalProps {
   projectId: string
   projectName: string
   defaultPhase?: string
+  onSuccess?: () => void
 }
 
 export function AddTransactionModal({ 
@@ -21,7 +22,8 @@ export function AddTransactionModal({
   onOpenChange, 
   projectId, 
   projectName,
-  defaultPhase 
+  defaultPhase,
+  onSuccess
 }: AddTransactionModalProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -69,11 +71,15 @@ export function AddTransactionModal({
       })
 
       if (response.ok) {
-        onOpenChange(false)
-        router.refresh()
         // Reset form
         setAmountValue("")
         setTransactionType("EXPENSE")
+        onOpenChange(false)
+        // Notify parent to refresh data
+        if (onSuccess) {
+          onSuccess()
+        }
+        router.refresh()
       }
     } catch (error) {
       console.error("Failed to create transaction:", error)
