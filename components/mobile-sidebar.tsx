@@ -20,7 +20,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Projects", href: "/dashboard/projects/kanban", icon: FolderKanban },
   { name: "Transactions", href: "/dashboard/transactions", icon: Receipt },
-  { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+  { name: "Project Reports", href: "/dashboard/reports", icon: BarChart3 },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 

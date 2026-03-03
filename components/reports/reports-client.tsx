@@ -118,8 +118,8 @@ export function ReportsClient({ projects }: ReportsClientProps) {
       {/* Header */}
       <div className="flex justify-between items-center print:hidden">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Financial Reports</h2>
-          <p className="text-muted-foreground">QuickBooks-style financial reporting</p>
+          <h2 className="text-3xl font-bold tracking-tight">Project Reports</h2>
+          <p className="text-muted-foreground">QuickBooks-style financial reporting for construction projects</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handlePrint}>
