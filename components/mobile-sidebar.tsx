@@ -11,7 +11,9 @@ import {
   Settings,
   X,
   User,
-  Menu
+  Menu,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -20,12 +22,19 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Projects", href: "/dashboard/projects/kanban", icon: FolderKanban },
   { name: "Transactions", href: "/dashboard/transactions", icon: Receipt },
-  { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+  { 
+    name: "Reports", 
+    icon: BarChart3,
+    submenu: [
+      { name: "Project Reports", href: "/dashboard/reports" }
+    ]
+  },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false)
+  const [reportsOpen, setReportsOpen] = useState(true)
   const pathname = usePathname()
 
   return (
