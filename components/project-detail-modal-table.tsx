@@ -44,10 +44,37 @@ interface ProjectDetailModalTableProps {
 
 export function ProjectDetailModalTable({ project, open, onOpenChange }: ProjectDetailModalTableProps) {
   const router = useRouter()
-  const currentPhase = project.status === "PRE_BIDDING" ? "PRE_BIDDING" : 
-                       project.status === "ACTIVE" ? "PROJECT_START" : "PROJECT_END"
   
-  const [expandedPhases, setExpandedPhases] = useState<string[]>([currentPhase])
+  const getTransactionsByPhase = (phase: string) => {
+    if (phase === "PROJECT_END") {
+      return project.transactions.filter(t => 
+        t.phase === "COMPLETION" || t.phase === "POST_PROJECT"
+      )
+    }
+    return project.transactions.filter(t => t.phase === phase)
+  }
+
+  const preBiddingTransactions = getTransactionsByPhase("PRE_BIDDING")
+  const projectStartTransactions = getTransactionsByPhase("PROJECT_START")
+  const projectEndTransactions = getTransactionsByPhase("PROJECT_END")
+  
+  // Determine which phase to auto-expand based on which has the most transactions
+  const getInitialExpandedPhase = () => {
+    const phaseCounts = {
+      "PRE_BIDDING": preBiddingTransactions.length,
+      "PROJECT_START": projectStartTransactions.length,
+      "PROJECT_END": projectEndTransactions.length,
+    }
+    
+    // Find phase with most transactions
+    const maxPhase = Object.entries(phaseCounts).reduce((max, [phase, count]) => 
+      count > max.count ? { phase, count } : max
+    , { phase: "PRE_BIDDING", count: phaseCounts["PRE_BIDDING"] })
+    
+    return maxPhase.phase
+  }
+  
+  const [expandedPhases, setExpandedPhases] = useState<string[]>([getInitialExpandedPhase()])
   const [addTransactionOpen, setAddTransactionOpen] = useState(false)
   const [selectedPhase, setSelectedPhase] = useState<string>("")
 
@@ -68,19 +95,6 @@ export function ProjectDetailModalTable({ project, open, onOpenChange }: Project
         : [...prev, phase]
     )
   }
-
-  const getTransactionsByPhase = (phase: string) => {
-    if (phase === "PROJECT_END") {
-      return project.transactions.filter(t => 
-        t.phase === "COMPLETION" || t.phase === "POST_PROJECT"
-      )
-    }
-    return project.transactions.filter(t => t.phase === phase)
-  }
-
-  const preBiddingTransactions = getTransactionsByPhase("PRE_BIDDING")
-  const projectStartTransactions = getTransactionsByPhase("PROJECT_START")
-  const projectEndTransactions = getTransactionsByPhase("PROJECT_END")
 
   const calculatePhaseTotal = (transactions: Transaction[]) => {
     return transactions.reduce((sum, t) => {
