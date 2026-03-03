@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
+import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { ProjectDetailModalTable } from "@/components/project-detail-modal-table"
-import { formatCurrency } from "@/lib/utils"
+import { DroppableColumn } from "@/components/droppable-column"
+import { DraggableProjectCard } from "@/components/draggable-project-card"
 
 interface Transaction {
   id: string
@@ -35,8 +36,18 @@ interface ProjectKanbanProps {
 }
 
 export function ProjectKanban({ projects }: ProjectKanbanProps) {
+  const router = useRouter()
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [activeId, setActiveId] = useState<string | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  )
 
   const getProjectsByStatus = (status: string) => {
     return projects.filter((p) => p.status === status)
@@ -50,6 +61,36 @@ export function ProjectKanban({ projects }: ProjectKanbanProps) {
     setSelectedProject(project)
     setModalOpen(true)
   }
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string)
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    setActiveId(null)
+
+    if (!over) return
+
+    const projectId = active.id as string
+    const newStatus = over.id as string
+
+    const project = projects.find(p => p.id === projectId)
+    if (!project || project.status === newStatus) return
+
+    try {
+      await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      })
+      router.refresh()
+    } catch (error) {
+      console.error("Failed to update project status:", error)
+    }
+  }
+
+  const activeProject = activeId ? projects.find(p => p.id === activeId) : null
 
   const getIncome = (project: Project) => {
     return project.transactions
@@ -68,98 +109,51 @@ export function ProjectKanban({ projects }: ProjectKanbanProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Projects Kanban</h2>
-        <p className="text-muted-foreground">
-          Manage projects across different phases
-        </p>
-      </div>
+    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Projects Kanban</h2>
+          <p className="text-muted-foreground">
+            Manage projects across different phases
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Pre-Bidding Column */}
-        <div className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
-            <h3 className="font-semibold text-lg mb-1">Pre-Bidding</h3>
-            <p className="text-sm text-muted-foreground">{preBiddingProjects.length} projects</p>
-          </div>
-          <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <DroppableColumn
+            id="PRE_BIDDING"
+            title="Pre-Bidding"
+            count={preBiddingProjects.length}
+            color="bg-blue-50 dark:bg-blue-950"
+          >
             {preBiddingProjects.map((project) => (
-              <Card 
-                key={project.id} 
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+              <DraggableProjectCard
+                key={project.id}
+                project={project}
                 onClick={() => handleCardClick(project)}
-              >
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{project.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{project.clientName}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Initial:</span>
-                      <span className="font-medium">{formatCurrency(project.totalBudget)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Income:</span>
-                      <span className="font-medium text-green-600">+{formatCurrency(getIncome(project))}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Expenses:</span>
-                      <span className="font-medium text-red-600">-{formatCurrency(getExpenses(project))}</span>
-                    </div>
-                    <div className="flex justify-between border-t pt-2">
-                      <span className="text-muted-foreground font-semibold">Current:</span>
-                      <span className="font-bold">{formatCurrency(getCurrentBudget(project))}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                getIncome={getIncome}
+                getExpenses={getExpenses}
+                getCurrentBudget={getCurrentBudget}
+              />
             ))}
-          </div>
-        </div>
+          </DroppableColumn>
 
-        {/* Project Start Column */}
-        <div className="space-y-4">
-          <div className="bg-yellow-50 dark:bg-yellow-950 p-4 rounded-lg">
-            <h3 className="font-semibold text-lg mb-1">Project Start</h3>
-            <p className="text-sm text-muted-foreground">{activeProjects.length} projects</p>
-          </div>
-          <div className="space-y-3">
+          <DroppableColumn
+            id="ACTIVE"
+            title="Project Start"
+            count={activeProjects.length}
+            color="bg-yellow-50 dark:bg-yellow-950"
+          >
             {activeProjects.map((project) => (
-              <Card 
-                key={project.id} 
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+              <DraggableProjectCard
+                key={project.id}
+                project={project}
                 onClick={() => handleCardClick(project)}
-              >
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{project.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{project.clientName}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Initial:</span>
-                      <span className="font-medium">{formatCurrency(project.totalBudget)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Income:</span>
-                      <span className="font-medium text-green-600">+{formatCurrency(getIncome(project))}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Expenses:</span>
-                      <span className="font-medium text-red-600">-{formatCurrency(getExpenses(project))}</span>
-                    </div>
-                    <div className="flex justify-between border-t pt-2">
-                      <span className="text-muted-foreground font-semibold">Current:</span>
-                      <span className="font-bold">{formatCurrency(getCurrentBudget(project))}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                getIncome={getIncome}
+                getExpenses={getExpenses}
+                getCurrentBudget={getCurrentBudget}
+              />
             ))}
-          </div>
-        </div>
+          </DroppableColumn>
 
         {/* Project End Column */}
         <div className="space-y-4">
@@ -204,13 +198,14 @@ export function ProjectKanban({ projects }: ProjectKanbanProps) {
         </div>
       </div>
 
-      {selectedProject && (
-        <ProjectDetailModalTable
-          project={selectedProject}
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-        />
-      )}
-    </div>
+        {selectedProject && (
+          <ProjectDetailModalTable
+            project={selectedProject}
+            open={modalOpen}
+            onOpenChange={setModalOpen}
+          />
+        )}
+      </div>
+    </DndContext>
   )
 }
