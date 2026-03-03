@@ -26,7 +26,6 @@ export function AddTransactionModal({
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [amountValue, setAmountValue] = useState("")
-  const [budgetedAmountValue, setBudgetedAmountValue] = useState("")
   const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE">("EXPENSE")
 
   const formatCurrency = (value: string) => {
@@ -41,18 +40,12 @@ export function AddTransactionModal({
     setAmountValue(formatted)
   }
 
-  const handleBudgetedAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value)
-    setBudgetedAmountValue(formatted)
-  }
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const amountNumeric = amountValue.replace(/,/g, "")
-    const budgetedNumeric = budgetedAmountValue.replace(/,/g, "")
     const data = {
       projectId: projectId,
       date: formData.get("date"),
@@ -62,7 +55,6 @@ export function AddTransactionModal({
       reason: formData.get("reason"),
       vendorName: formData.get("vendorName"),
       amount: parseFloat(amountNumeric),
-      budgetedAmount: budgetedNumeric ? parseFloat(budgetedNumeric) : null,
       paymentStatus: formData.get("paymentStatus"),
       invoiceNumber: formData.get("invoiceNumber") || null,
       imageUrl: formData.get("imageUrl") || null,
@@ -81,7 +73,6 @@ export function AddTransactionModal({
         router.refresh()
         // Reset form
         setAmountValue("")
-        setBudgetedAmountValue("")
         setTransactionType("EXPENSE")
       }
     } catch (error) {
@@ -220,31 +211,17 @@ export function AddTransactionModal({
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">Amount (₱)</Label>
-              <Input 
-                id="amount" 
-                name="amount" 
-                type="text" 
-                required 
-                placeholder="50,000"
-                value={amountValue}
-                onChange={handleAmountChange}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="budgetedAmount">Budgeted Amount (₱)</Label>
-              <Input 
-                id="budgetedAmount" 
-                name="budgetedAmount" 
-                type="text" 
-                placeholder="Optional"
-                value={budgetedAmountValue}
-                onChange={handleBudgetedAmountChange}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="amount">Amount (₱)</Label>
+            <Input 
+              id="amount" 
+              name="amount" 
+              type="text" 
+              required 
+              placeholder="50,000"
+              value={amountValue}
+              onChange={handleAmountChange}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

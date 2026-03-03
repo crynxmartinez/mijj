@@ -15,7 +15,6 @@ export async function POST(request: Request) {
         reason: body.reason,
         vendorName: body.vendorName,
         amount: body.amount,
-        budgetedAmount: body.budgetedAmount,
         paymentStatus: body.paymentStatus,
         invoiceNumber: body.invoiceNumber,
         imageUrl: body.imageUrl,
