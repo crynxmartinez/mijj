@@ -155,48 +155,24 @@ export function ProjectKanban({ projects }: ProjectKanbanProps) {
             ))}
           </DroppableColumn>
 
-        {/* Project End Column */}
-        <div className="space-y-4">
-          <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg">
-            <h3 className="font-semibold text-lg mb-1">Project End</h3>
-            <p className="text-sm text-muted-foreground">{completedProjects.length} projects</p>
-          </div>
-          <div className="space-y-3">
+          <DroppableColumn
+            id="COMPLETED"
+            title="Project End"
+            count={completedProjects.length}
+            color="bg-green-50 dark:bg-green-950"
+          >
             {completedProjects.map((project) => (
-              <Card 
-                key={project.id} 
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+              <DraggableProjectCard
+                key={project.id}
+                project={project}
                 onClick={() => handleCardClick(project)}
-              >
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{project.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{project.clientName}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Initial:</span>
-                      <span className="font-medium">{formatCurrency(project.totalBudget)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Income:</span>
-                      <span className="font-medium text-green-600">+{formatCurrency(getIncome(project))}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Expenses:</span>
-                      <span className="font-medium text-red-600">-{formatCurrency(getExpenses(project))}</span>
-                    </div>
-                    <div className="flex justify-between border-t pt-2">
-                      <span className="text-muted-foreground font-semibold">Current:</span>
-                      <span className="font-bold">{formatCurrency(getCurrentBudget(project))}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                getIncome={getIncome}
+                getExpenses={getExpenses}
+                getCurrentBudget={getCurrentBudget}
+              />
             ))}
-          </div>
+          </DroppableColumn>
         </div>
-      </div>
 
         {selectedProject && (
           <ProjectDetailModalTable
