@@ -173,16 +173,20 @@ export function ProjectKanban({ projects }: ProjectKanbanProps) {
                 <CardContent>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Budget:</span>
+                      <span className="text-muted-foreground">Initial:</span>
                       <span className="font-medium">{formatCurrency(project.totalBudget)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Spent:</span>
-                      <span className="font-medium">{formatCurrency(getSpentAmount(project))}</span>
+                      <span className="text-muted-foreground">Income:</span>
+                      <span className="font-medium text-green-600">+{formatCurrency(getIncome(project))}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Transactions:</span>
-                      <Badge variant="secondary">{project.transactions.length}</Badge>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Expenses:</span>
+                      <span className="font-medium text-red-600">-{formatCurrency(getExpenses(project))}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2">
+                      <span className="text-muted-foreground font-semibold">Current:</span>
+                      <span className="font-bold">{formatCurrency(getCurrentBudget(project))}</span>
                     </div>
                   </div>
                 </CardContent>
