@@ -33,7 +33,7 @@ export function ProjectForm() {
       })
 
       if (response.ok) {
-        router.push("/projects")
+        router.push("/dashboard/projects")
         router.refresh()
       }
     } catch (error) {

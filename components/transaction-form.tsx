@@ -42,7 +42,7 @@ export function TransactionForm({ projects }: { projects: Project[] }) {
       })
 
       if (response.ok) {
-        router.push("/transactions")
+        router.push("/dashboard/transactions")
         router.refresh()
       }
     } catch (error) {

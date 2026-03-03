@@ -18,10 +18,10 @@ import { Button } from "@/components/ui/button"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Projects", href: "/projects", icon: FolderKanban },
-  { name: "Transactions", href: "/transactions", icon: Receipt },
-  { name: "Reports", href: "/reports", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
+  { name: "Transactions", href: "/dashboard/transactions", icon: Receipt },
+  { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 export function MobileSidebar() {

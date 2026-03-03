@@ -18,10 +18,10 @@ import { Button } from "@/components/ui/button"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Projects", href: "/projects", icon: FolderKanban },
-  { name: "Transactions", href: "/transactions", icon: Receipt },
-  { name: "Reports", href: "/reports", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
+  { name: "Transactions", href: "/dashboard/transactions", icon: Receipt },
+  { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 export function Sidebar() {
@@ -58,7 +58,7 @@ export function Sidebar() {
 
         {/* Quick Action */}
         <div className="p-4">
-          <Link href="/projects/new">
+          <Link href="/dashboard/projects/new">
             <Button 
               className={cn(
                 "w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg",
