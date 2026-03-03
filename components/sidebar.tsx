@@ -140,11 +140,16 @@ export function Sidebar() {
             }
             
             // Regular menu item without submenu
-            const isActive = pathname === item.href || pathname.startsWith((item.href || '') + "/")
+            if (!item.href) return null
+            
+            // For Dashboard, use exact match to avoid matching /dashboard/reports etc.
+            const isActive = item.href === "/dashboard" 
+              ? pathname === item.href
+              : pathname === item.href || pathname.startsWith(item.href + "/")
             return (
               <Link
                 key={item.name}
-                href={item.href || '#'}
+                href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   isActive

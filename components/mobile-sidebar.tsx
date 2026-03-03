@@ -141,7 +141,10 @@ export function MobileSidebar() {
               // Regular menu item without submenu
               if (!item.href) return null
               
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+              // For Dashboard, use exact match to avoid matching /dashboard/reports etc.
+              const isActive = item.href === "/dashboard" 
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(item.href + "/")
               return (
                 <Link
                   key={item.name}
