@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, ProjectStatus } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -8,7 +8,7 @@ const SEED_PROJECTS = [
     description: 'Modern 5-story residential building with commercial ground floor',
     clientName: 'ABC Development Corp',
     totalBudget: 5000000,
-    status: 'ACTIVE',
+    status: ProjectStatus.ACTIVE,
     startDate: new Date(2025, 0, 1),
     endDate: new Date(2025, 11, 31),
   },
@@ -17,7 +17,7 @@ const SEED_PROJECTS = [
     description: 'Complete office space renovation including electrical and HVAC',
     clientName: 'XYZ Holdings Inc',
     totalBudget: 2500000,
-    status: 'ACTIVE',
+    status: ProjectStatus.ACTIVE,
     startDate: new Date(2025, 1, 1),
     endDate: new Date(2025, 8, 30),
   },
@@ -26,7 +26,7 @@ const SEED_PROJECTS = [
     description: 'Industrial warehouse with loading docks and office area',
     clientName: 'Logistics Solutions Ltd',
     totalBudget: 3500000,
-    status: 'PRE_BIDDING',
+    status: ProjectStatus.PRE_BIDDING,
     startDate: new Date(2025, 2, 1),
     endDate: new Date(2025, 10, 30),
   },
@@ -35,7 +35,7 @@ const SEED_PROJECTS = [
     description: 'Structural repairs and painting of 3-story school building',
     clientName: 'Department of Education',
     totalBudget: 1500000,
-    status: 'COMPLETED',
+    status: ProjectStatus.COMPLETED,
     startDate: new Date(2025, 0, 1),
     endDate: new Date(2025, 9, 31),
   },
@@ -44,7 +44,7 @@ const SEED_PROJECTS = [
     description: 'New wing addition with retail spaces and parking',
     clientName: 'Mega Mall Properties',
     totalBudget: 8000000,
-    status: 'ON_HOLD',
+    status: ProjectStatus.ON_HOLD,
     startDate: new Date(2025, 3, 1),
     endDate: new Date(2026, 2, 31),
   },
