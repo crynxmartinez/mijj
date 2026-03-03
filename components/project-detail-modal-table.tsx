@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ChevronDown, ChevronRight, Plus, ExternalLink } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
-import Link from "next/link"
+import { AddTransactionModal } from "@/components/add-transaction-modal"
 
 interface Transaction {
   id: string
@@ -46,6 +46,13 @@ export function ProjectDetailModalTable({ project, open, onOpenChange }: Project
                        project.status === "ACTIVE" ? "PROJECT_START" : "PROJECT_END"
   
   const [expandedPhases, setExpandedPhases] = useState<string[]>([currentPhase])
+  const [addTransactionOpen, setAddTransactionOpen] = useState(false)
+  const [selectedPhase, setSelectedPhase] = useState<string>("")
+
+  const handleAddTransaction = (phase: string) => {
+    setSelectedPhase(phase)
+    setAddTransactionOpen(true)
+  }
 
   const togglePhase = (phase: string) => {
     setExpandedPhases(prev => 
@@ -198,12 +205,15 @@ export function ProjectDetailModalTable({ project, open, onOpenChange }: Project
             ) : (
               <p className="text-center text-muted-foreground py-4">No transactions yet</p>
             )}
-            <Link href={`/dashboard/transactions/new?projectId=${project.id}&phase=${phase}`}>
-              <Button variant="outline" className="w-full mt-3" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Transaction
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              className="w-full mt-3" 
+              size="sm"
+              onClick={() => handleAddTransaction(phase)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Transaction
+            </Button>
           </div>
         )}
       </div>
@@ -275,6 +285,14 @@ export function ProjectDetailModalTable({ project, open, onOpenChange }: Project
           />
         </div>
       </DialogContent>
+
+      <AddTransactionModal
+        open={addTransactionOpen}
+        onOpenChange={setAddTransactionOpen}
+        projectId={project.id}
+        projectName={project.name}
+        defaultPhase={selectedPhase}
+      />
     </Dialog>
   )
 }
