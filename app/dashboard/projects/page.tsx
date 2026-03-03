@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 async function getProjects() {
   return await prisma.project.findMany({
     include: {
